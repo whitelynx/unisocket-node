@@ -35,7 +35,7 @@ describe('UniSocket Client', function()
     {
         socket.on('send', function(data)
         {
-            assert.equal("{\"name\":\"test\",\"data\":[]}", data);
+            assert.equal(data, "{\"name\":\"test\",\"data\":[]}");
             done();
         });
 
@@ -46,7 +46,7 @@ describe('UniSocket Client', function()
     {
         socket.on('send', function(data)
         {
-            assert.equal("{\"name\":\"test\",\"data\":[{\"foo\":\"bar\"},[1,2,3,4,5]]}", data);
+            assert.equal(data, "{\"name\":\"test\",\"data\":[{\"foo\":\"bar\"},[1,2,3,4,5]]}");
             done();
         });
 
@@ -57,7 +57,7 @@ describe('UniSocket Client', function()
     {
         socket.on('send', function(data)
         {
-            assert.equal("{\"name\":\"test message with spaces\",\"data\":[]}", data);
+            assert.equal(data, "{\"name\":\"test message with spaces\",\"data\":[]}");
             done();
         });
 
@@ -78,7 +78,7 @@ describe('UniSocket Client', function()
     {
         client.on('test', function(data)
         {
-            assert.deepEqual({ foo: "bar" }, data);
+            assert.deepEqual(data, { foo: "bar" });
             done();
         });
 
@@ -156,19 +156,39 @@ describe('UniSocket Client', function()
 
     describe("Replies", function()
     {
-        xit("saves the callback for reply messages", function()
+        it("adds 'replyWith' when emit is given a callback", function(done)
         {
+            socket.on('send', function(data)
+            {
+                assert.equal(data, "{\"name\":\"test\",\"data\":[],\"replyWith\":\"1\"}");
+                done();
+            });
 
+            client.emit('test', function(){});
         });
 
-        xit("calls the callback for reply messages", function()
+        it("checks the 'replyTo' field for stored callbacks and calls them", function(done)
         {
+            client.waitingCallbacks["1"] = function()
+            {
+                done();
+            };
 
+            socket.emit('message', "{\"name\":\"test\",\"data\":[],\"replyTo\":\"1\"}");
         });
 
-        xit("adds a 'replyTo' field for outgoing replies", function()
+        it("end to end reply test", function(done)
         {
+            socket.on('send', function(data)
+            {
+                assert.equal(data, "{\"name\":\"test\",\"data\":[],\"replyWith\":\"1\"}");
+                socket.emit('message', "{\"name\":\"test\",\"data\":[],\"replyTo\":\"1\"}");
+            });
 
+            client.emit('test', function()
+            {
+                done();
+            });
         });
     });
 });
