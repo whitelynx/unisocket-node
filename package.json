@@ -1,0 +1,30 @@
+{
+  "name": "unisocket",
+  "version": "0.1.0",
+  "description": "A node.js server implementation of the UniSocket communication protocol.",
+  "main": "unisockets.js",
+  "scripts": {
+      "test": "./node_modules/.bin/mocha tests --reporter spec --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Morgul/unisocket-node.git"
+  },
+  "keywords": [
+    "websocket",
+    "socket.io",
+    "sockets"
+  ],
+  "author": "Christopher S. Case <chris.case@g33xnexus.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Morgul/unisocket-node/issues"
+  },
+  "dependencies": {
+    "ws": "~0.4.31",
+    "lodash": "~2.4.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.18.2"
+  }
+}
