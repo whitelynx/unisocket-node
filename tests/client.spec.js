@@ -15,7 +15,7 @@ var UniSocketClient = require('../lib/client');
 function FakeSocket()
 {
     EventEmitter.call(this);
-} // end FakeSocket
+} // end FakeSocketServer
 util.inherits(FakeSocket, EventEmitter);
 FakeSocket.prototype.send = function(data){ this.emit('send', data) };
 
@@ -177,7 +177,7 @@ describe('UniSocket Client', function()
             socket.emit('message', "{\"name\":\"test\",\"data\":[],\"replyTo\":\"1\"}");
         });
 
-        it("end to end reply test", function(done)
+        it("passes the end to end reply test", function(done)
         {
             socket.on('send', function(data)
             {

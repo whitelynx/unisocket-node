@@ -5,25 +5,209 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 var assert = require("assert");
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
+
+var UniSocketServer = require('../unisockets');
+var UniSocketClient = require('../lib/client');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('something', function ()
+function FakeSocketServer()
 {
+    EventEmitter.call(this);
+} // end FakeSocketServer
+util.inherits(FakeSocketServer, EventEmitter);
+FakeSocketServer.prototype.send = function(data){ this.emit('send', data) };
 
-    beforeEach(function ()
+// ---------------------------------------------------------------------------------------------------------------------
+
+describe('UniSocketServer', function()
+{
+    var wss;
+    var server;
+    var options = { replyTimeout: 1000 };
+    beforeEach(function()
     {
-        // Code goes here.
+        wss = new FakeSocketServer();
+        server = new UniSocketServer(options);
+        server.wss = wss;
+
+        // Since we're not calling listen or attach, we have to do this ourselves.
+        server._connectEvents();
     });
 
-    afterEach(function ()
+    it('emits `error` on error events', function(done)
     {
-        // Code goes here.
+        server.on('error', function(error)
+        {
+            assert.equal(error, "Some Error!");
+            done();
+        });
+
+        wss.emit('error', "Some Error!");
     });
 
-    it('should do something', function ()
+    it('emits `headers` on headers events', function(done)
     {
-        //assert(false, "Not Implemented.");
+        server.on('headers', function(headers)
+        {
+            assert.deepEqual(headers, ['foo', 'bar']);
+            done();
+        });
+
+        wss.emit('headers', ['foo', 'bar']);
+    });
+
+    xit('listens on the provided port when `listen` is called', function()
+    {
+        //TODO: This should be an end-to-end test, where we use real websockets/http to test this.
+    });
+
+    xit('attaches to an existing `httpServer` instance when the `attach` function is called', function()
+    {
+        //TODO: This should be an end-to-end test, where we use real websockets/http to test this.
+    });
+
+    xit('serves client library', function()
+    {
+        //TODO: This should use a http get request to test.
+    });
+
+    describe('Connection', function()
+    {
+        it('listens for incoming connections', function(done)
+        {
+            var socket = new FakeSocketServer();
+            server._handleControlMessages = function(socket)
+            {
+                done();
+                return function(){};
+            };
+
+            wss.emit('connection', socket);
+            socket.emit('message');
+        });
+
+        it('replies with the configured options on `connection` message', function(done)
+        {
+            var socket = new FakeSocketServer();
+
+            socket.on('send', function(message)
+            {
+                message = JSON.parse(message);
+
+                assert.deepEqual(message.data[0], options);
+                done();
+            });
+
+            wss.emit('connection', socket);
+            socket.emit('message', JSON.stringify({
+                name: 'connect',
+                channel: '$control',
+                replyWith: '1'
+            }));
+        });
+
+        it('emits the `connection` signal once the client and server have finished their handshake', function(done)
+        {
+            var socket = new FakeSocketServer();
+
+            server.on('connection', function(client)
+            {
+                done();
+            });
+
+            wss.emit('connection', socket);
+            socket.emit('message', JSON.stringify({
+                name: 'connect',
+                channel: '$control',
+                replyWith: '1'
+            }));
+        });
+
+        it('returns a UniSocketClient instance when a websocket connection is made', function(done)
+        {
+            var socket = new FakeSocketServer();
+
+            server.on('connection', function(client)
+            {
+                assert(client instanceof UniSocketClient);
+                done();
+            });
+
+            wss.emit('connection', socket);
+            socket.emit('message', JSON.stringify({
+                name: 'connect',
+                channel: '$control',
+                replyWith: '1'
+            }));
+        });
+
+        it('removes the client when the websocket disconnects', function(done)
+        {
+            var socket = new FakeSocketServer();
+
+            server.on('connection', function(client)
+            {
+                // Check that we have one client
+                assert.equal(server.clients.length, 1);
+
+                // Simulate a close event
+                client._emit('close');
+
+                // Check that we no longer have any clients
+                assert.equal(server.clients.length, 0);
+                done();
+            });
+
+            wss.emit('connection', socket);
+            socket.emit('message', JSON.stringify({
+                name: 'connect',
+                channel: '$control',
+                replyWith: '1'
+            }));
+        });
+    });
+
+    describe('Channels', function()
+    {
+        it('stores the channel callback passed to the `channel` function', function()
+        {
+            var cb = function(client){};
+            server.channel('foobar', cb);
+
+            assert.equal(server.channels['foobar'][0], cb);
+        });
+
+        it('calls the registered channel callbacks on a `channel` message', function(done)
+        {
+            var socket = new FakeSocketServer();
+
+            // Register for a channel
+            server.channel('foobar', function(client)
+            {
+                assert(client instanceof UniSocketClient);
+                done();
+            });
+
+            // When the server sends the reply, we send the channel message
+            socket.on('send', function(message)
+            {
+                socket.emit('message', JSON.stringify({
+                    name: 'channel',
+                    channel: '$control',
+                    data: ['foobar']
+                }));
+            });
+
+            wss.emit('connection', socket);
+            socket.emit('message', JSON.stringify({
+                name: 'connect',
+                channel: '$control',
+                replyWith: '1'
+            }));
+        });
     });
 });
 

@@ -4,7 +4,7 @@
   "description": "A node.js server implementation of the UniSocket communication protocol.",
   "main": "unisockets.js",
   "scripts": {
-      "test": "./node_modules/.bin/mocha tests --reporter spec --recursive"
+    "test": "./node_modules/.bin/mocha tests --reporter spec --recursive"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "ws": "~0.4.31",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "omega-logger": "~0.5.4"
   },
   "devDependencies": {
     "mocha": "~1.18.2"
