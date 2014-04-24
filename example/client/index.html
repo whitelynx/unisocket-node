@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>UniSocket Example</title>
+        <link href="http://bootswatch.com/darkly/bootstrap.min.css" rel="stylesheet">
+        <script src="/unisocket/$/client.js"></script>
+        <script>
+            var socket = unisocket.connect("localhost:4000");
+            socket.on('connected', function()
+            {
+                console.log('connected.');
+
+            });
+
+            function sendIfEnter(event)
+            {
+                if(event.keyCode == 13)
+                {
+                    sendEcho();
+                } // end if
+            } // end sendIfEnter
+
+            function sendEcho()
+            {
+                var echoInput = document.getElementById('echoText');
+                var echoOutput = document.getElementById('echoWell');
+
+                var text = echoInput.value;
+                socket.emit('echo', text, function(echo)
+                {
+                    echoInput.value = "";
+
+                    echoOutput.innerHTML += "<div>" + echo + "</div>";
+                });
+            } // end sendEcho
+        </script>
+    </head>
+    <body>
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">UniSocket Example</a>
+            </div>
+        </div>
+        <div class="container">
+            <h3>Simple Echo test</h3>
+            <p class="text-muted">Just type some words into the input box below, and press 'Enter' (or click 'Send'). The server will echo it back.</p>
+            <div class="well" style="height: 400px;" id="echoWell">
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="echoText" placeholder="Type words here..." onkeypress="sendIfEnter(event)">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="sendEcho();">Send</button>
+                </span>
+            </div>
+        </div>
+    </body>
+</html>
