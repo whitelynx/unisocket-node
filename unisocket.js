@@ -4,6 +4,8 @@
 // @module unisockets.js
 //----------------------------------------------------------------------------------------------------------------------
 
+var fs = require('fs');
+var path = require('path');
 var http = require('http');
 var wss = require('ws');
 
@@ -42,6 +44,10 @@ UniSocketServer.prototype._connectEvents = function()
 {
     var self = this;
 
+    // Bind to the httpServer's request event
+    this.httpServer.on('request', this._serveFiles.bind(this));
+
+    // Bind to the websocket server's connection event
     this.wss.on('connection', function(socket)
     {
         socket.on('message', self._handleControlMessages(socket));
@@ -109,6 +115,15 @@ UniSocketServer.prototype._handleControlMessages = function(socket)
     };
 };
 
+UniSocketServer.prototype._serveFiles = function(request, response)
+{
+    if(request.url == '/unisocket/$/client.js')
+    {
+        response.writeHead(200, {'Content-Type': 'text/javascript'});
+        fs.createReadStream(path.join(__dirname, 'static/unisocket.js')).pipe(response);
+    } // end if
+}; // end _serveFiles
+
 //----------------------------------------------------------------------------------------------------------------------
 // Public API
 //----------------------------------------------------------------------------------------------------------------------
@@ -125,12 +140,7 @@ UniSocketServer.prototype.channel = function(channel, callback)
 
 UniSocketServer.prototype.listen = function(port, fn)
 {
-    this.httpServer = http.createServer(function (req, res)
-    {
-        res.writeHead(501);
-        res.end('Not Implemented');
-    }); // end http.createServer
-
+    this.httpServer = http.createServer();
     this.httpServer.listen(port, fn);
 
     // Create ws server

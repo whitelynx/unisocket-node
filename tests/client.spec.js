@@ -177,18 +177,31 @@ describe('UniSocket Client', function()
             socket.emit('message', "{\"name\":\"test\",\"data\":[],\"replyTo\":\"1\"}");
         });
 
-        it("passes the end to end reply test", function(done)
+        it("passes a callback as an argument to an event listener for an event expecting a reply", function(done)
         {
-            socket.on('send', function(data)
+            client.on('test', function(callback)
             {
-                assert.equal(data, "{\"name\":\"test\",\"data\":[],\"replyWith\":\"1\"}");
-                socket.emit('message', "{\"name\":\"test\",\"data\":[],\"replyTo\":\"1\"}");
-            });
-
-            client.emit('test', function()
-            {
+                assert(typeof callback == 'function');
                 done();
             });
+
+            socket.emit('message', "{\"name\":\"test\",\"data\":[], \"replyWith\":\"1\"}");
+        });
+
+        it("event listener callback sends a reply to the client", function(done)
+        {
+            client.on('test', function(callback)
+            {
+                callback('foo');
+            });
+
+            socket.on('send', function(message)
+            {
+                assert.equal(message, "{\"name\":\"test\",\"replyTo\":\"1\",\"data\":[\"foo\"]}");
+                done();
+            });
+
+            socket.emit('message', "{\"name\":\"test\",\"data\":[], \"replyWith\":\"1\"}");
         });
     });
 });

@@ -37,6 +37,7 @@ describe('UniSocketServer', function()
         server.wss = wss;
 
         // Since we're not calling listen or attach, we have to do this ourselves.
+        server.httpServer = new EventEmitter();
         server._connectEvents();
     });
 
@@ -87,9 +88,14 @@ describe('UniSocketServer', function()
         });
     });
 
-    xit('serves client library', function()
+    it('serves client library', function(done)
     {
-        //TODO: This should use a http get request to test.
+        server.listen(4008);
+        http.get('http://localhost:4008/unisocket/$/client.js', function(response)
+        {
+            assert.equal(response.statusCode, 200);
+            done();
+        });
     });
 
     describe('Connection', function()
