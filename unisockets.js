@@ -131,10 +131,10 @@ UniSocketServer.prototype.listen = function(port, fn)
         res.end('Not Implemented');
     }); // end http.createServer
 
-    server.listen(port, fn);
+    this.httpServer.listen(port, fn);
 
     // Create ws server
-    this.attach(server, options);
+    this.attach(this.httpServer);
 
     // Allow chaining
     return this;

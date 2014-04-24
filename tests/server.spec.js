@@ -4,9 +4,12 @@
 // @module server.spec.js
 // ---------------------------------------------------------------------------------------------------------------------
 
-var assert = require("assert");
+var http = require('http');
+var assert = require('assert');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+
+var WebSocket = require('ws');
 
 var UniSocketServer = require('../unisockets');
 var UniSocketClient = require('../lib/client');
@@ -59,14 +62,29 @@ describe('UniSocketServer', function()
         wss.emit('headers', ['foo', 'bar']);
     });
 
-    xit('listens on the provided port when `listen` is called', function()
+    it('listens on the provided port when `listen` is called', function(done)
     {
-        //TODO: This should be an end-to-end test, where we use real websockets/http to test this.
+        server.listen(4004);
+
+        var ws = new WebSocket('ws://localhost:4004');
+        ws.on('open', function()
+        {
+            done();
+        });
     });
 
-    xit('attaches to an existing `httpServer` instance when the `attach` function is called', function()
+    it('attaches to an existing `httpServer` instance when the `attach` function is called', function(done)
     {
-        //TODO: This should be an end-to-end test, where we use real websockets/http to test this.
+        var httpServer = http.createServer();
+        httpServer.listen(4000);
+
+        server.attach(httpServer);
+
+        var ws = new WebSocket('ws://localhost:4000');
+        ws.on('open', function()
+        {
+            done();
+        });
     });
 
     xit('serves client library', function()
