@@ -11,7 +11,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var WebSocket = require('ws');
 
-var UniSocketServer = require('../unisockets');
+var UniSocketServer = require('../unisocket');
 var UniSocketClient = require('../lib/client');
 
 // ---------------------------------------------------------------------------------------------------------------------
