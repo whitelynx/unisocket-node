@@ -22,7 +22,7 @@ socketServer.httpServer.on('request', function(request, response)
     } // end if
 });
 
-socketServer.on('connection', function(client)
+socketServer.channel('/echo', function(client)
 {
     client.on('echo', function(msg, callback)
     {

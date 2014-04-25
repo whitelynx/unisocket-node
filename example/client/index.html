@@ -6,11 +6,10 @@
         <link href="http://bootswatch.com/darkly/bootstrap.min.css" rel="stylesheet">
         <script src="/unisocket/$/client.js"></script>
         <script>
-            var socket = unisocket.connect("localhost:4000");
+            var socket = unisocket.connect("localhost:4000/echo");
             socket.on('connected', function()
             {
                 console.log('connected.');
-
             });
 
             function sendIfEnter(event)
