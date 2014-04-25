@@ -10,7 +10,7 @@ var UniSocketServer = require('../unisocket');
 
 //----------------------------------------------------------------------------------------------------------------------
 
-var socketServer = (new UniSocketServer()).listen(4000);
+var socketServer = new UniSocketServer().listen(4000);
 var logger = socketServer.logger;
 
 // Handle serving of index file
