@@ -261,9 +261,11 @@ $ npm test
 
 ## Contributions
 
-Contributions are welcome.
+Feel free to make pull requests, fix bugs, add features, etc. We ask that all pull requests maintain the formatting and
+style of the original file, and that all new features include tests. We reserve the right to refuse any features that
+do not fit the project's goals.
 
-## License
+### License
 
 All code is licensed under the MIT license.
 
