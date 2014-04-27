@@ -1,5 +1,7 @@
 # UniSocket Server
 
+[![Build Status](https://travis-ci.org/Morgul/unisocket-node.svg?branch=master)](https://travis-ci.org/Morgul/unisocket-node)
+
 This is a Node.js server for [UniSocket][unisocket]. It supports the entire UniSocket specification, including channels
 and replies.
 
