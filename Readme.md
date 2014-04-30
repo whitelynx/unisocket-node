@@ -58,7 +58,39 @@ var socketServer = new UniSocketServer().attach(httpServer);
 
 ### Using a Connect-style server
 
-_Haven't figured this one out yet; but as I use connect a lot, I figure I'll sort this out eventually._
+Using it with connect is just as simple as attaching to an existing http server.
+
+```javascript
+var http = require('http');
+var connect = require('connect');
+var UniSocketServer = require('../unisocket');
+
+var app = connect()
+    .use(connect.logger('dev'))
+    .use(connect.static('public'))
+    .use(function(req, res){
+        res.end('hello world\n');
+    });
+
+var httpServer = http.createServer(app).listen(4000);
+var socketServer = new UniSocketServer().attach(httpServer);
+```
+
+Alternatively, you can use it with connect without creating an http server by hand.
+
+```javascript
+var connect = require('connect');
+var UniSocketServer = require('../unisocket');
+
+var server = connect()
+    .use(connect.logger('dev'))
+    .use(connect.static('public'))
+    .use(function(req, res){
+        res.end('hello world\n');
+    }).listen(4000);
+
+var socketServer = new UniSocketServer().attach(server);
+```
 
 ### Using the served client-side library
 
