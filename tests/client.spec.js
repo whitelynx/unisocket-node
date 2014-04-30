@@ -188,6 +188,21 @@ describe('UniSocket Client', function()
             socket.emit('message', "{\"name\":\"test\",\"data\":[], \"replyWith\":\"1\"}");
         });
 
+        it("triggers a timeout if a reply isn't sent within the configured timeout.", function(done)
+        {
+            // shorten the timeout interval
+            client.options.timeout = 10;
+
+            // override the logger
+            client.logger = { error: function(){} };
+
+            client.emit('test', function(){});
+            client.on('timeout', function()
+            {
+                done();
+            });
+        });
+
         it("event listener callback sends a reply to the client", function(done)
         {
             client.on('test', function(callback)

@@ -121,7 +121,7 @@ describe('UniSocketServer', function()
             {
                 message = JSON.parse(message);
 
-                assert.deepEqual(message.data[0], options);
+                assert.deepEqual(message.data[0], { "replyTimeout": 1000, "timeout": 30000 });
                 done();
             });
 

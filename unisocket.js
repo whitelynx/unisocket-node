@@ -24,10 +24,13 @@ function UniSocketServer(options)
 {
     EventEmitter.call(this);
 
-    this.options = options || {};
+    this.options = _.defaults(options, {
+        timeout: 30000,
+        logger: _logger
+    });
 
     // Support an alternative logger; must conform to the omega-logger api.
-    this.logger = this.options.logger || _logger;
+    this.logger = this.options.logger;
 
     this.wss = undefined;
     this.httpServer = undefined;
@@ -81,11 +84,11 @@ UniSocketServer.prototype._handleControlMessages = function(socket)
                         name: 'connect',
                         channel: '$control',
                         replyTo: message.replyWith,
-                        data: [self.options]
+                        data: [_.omit(self.options, 'logger')]
                     }));
 
                     // Build our client object
-                    var client = new UniSocketClient(socket, undefined, self.options.logger);
+                    var client = new UniSocketClient(socket, undefined, self.options);
                     client.on('close', function()
                     {
                         self.clients = _.remove(client, self.clients);
@@ -101,7 +104,7 @@ UniSocketServer.prototype._handleControlMessages = function(socket)
                     {
                         self.channels[channel].forEach(function(callback)
                         {
-                            var client = new UniSocketClient(socket, channel, self.options.logger);
+                            var client = new UniSocketClient(socket, channel, self.options);
                             callback(client);
                         });
                     } // end if
