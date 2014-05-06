@@ -24,7 +24,7 @@ function UniSocketServer(options)
 {
     EventEmitter.call(this);
 
-    this.options = _.defaults(options, {
+    this.options = _.defaults(options || {}, {
         timeout: 30000,
         logger: _logger
     });
@@ -143,11 +143,11 @@ UniSocketServer.prototype.channel = function(channel, callback)
 
 UniSocketServer.prototype.listen = function(port, fn)
 {
-    this.httpServer = http.createServer();
-    this.httpServer.listen(port, fn);
+    var httpServer = http.createServer();
+    httpServer.listen(port, fn);
 
     // Create ws server
-    this.attach(this.httpServer);
+    this.attach(httpServer);
 
     // Allow chaining
     return this;
@@ -155,6 +155,8 @@ UniSocketServer.prototype.listen = function(port, fn)
 
 UniSocketServer.prototype.attach = function(server)
 {
+	this.httpServer = server;
+
     this.wss = new wss.Server({ server: server });
 
     // Connect events
