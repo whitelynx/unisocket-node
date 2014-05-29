@@ -120,11 +120,14 @@ UniSocketServer.prototype._handleControlMessages = function(socket)
 
 UniSocketServer.prototype._serveFiles = function(request, response)
 {
-    if(request.url == '/unisocket/$/client.js')
+    request.on('end', function()
     {
-        response.writeHead(200, {'Content-Type': 'text/javascript'});
-        fs.createReadStream(path.join(__dirname, 'static/unisocket.js')).pipe(response);
-    } // end if
+        if(request.url == '/unisocket/$/client.js')
+        {
+            response.writeHead(200, {'Content-Type': 'text/javascript'});
+            fs.createReadStream(path.join(__dirname, 'static/unisocket.js')).pipe(response);
+        } // end if
+    }).resume();
 }; // end _serveFiles
 
 //----------------------------------------------------------------------------------------------------------------------
