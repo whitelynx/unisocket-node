@@ -6,10 +6,19 @@
         <link href="http://bootswatch.com/darkly/bootstrap.min.css" rel="stylesheet">
         <script src="/unisocket/$/client.js"></script>
         <script>
-            var socket = unisocket.connect("localhost:4000/echo");
-            socket.on('connected', function()
+            var socket = unisocket.connect();
+            var channel;
+            console.log('socket:', socket);
+
+            socket.then(function()
             {
                 console.log('connected.');
+
+                return socket.channel('/echo');
+            })
+            .then(function(chan)
+            {
+                channel = chan;
             });
 
             function sendIfEnter(event)
@@ -26,7 +35,7 @@
                 var echoOutput = document.getElementById('echoWell');
 
                 var text = echoInput.value;
-                socket.emit('echo', text, function(echo)
+                channel.request('echo', text).then(function(echo)
                 {
                     echoInput.value = "";
 
