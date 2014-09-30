@@ -15,7 +15,6 @@ var UniSocketClient = require('./lib/client');
 module.exports = {
     connect: function(url, options)
     {
-        console.log("Returning new UniSocketClientPromise.");
         var client = new UniSocketClient(options)
         var clientPromise =  client.connect(url);
         return _.assign(clientPromise, _.bindAll(client));
