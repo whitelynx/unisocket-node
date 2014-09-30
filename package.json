@@ -1,6 +1,6 @@
 {
   "name": "unisocket",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "A node.js server implementation of the UniSocket communication protocol.",
   "main": "unisocket.js",
   "scripts": {
