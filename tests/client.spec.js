@@ -17,7 +17,7 @@ function FakeSocket()
     EventEmitter.call(this);
 } // end FakeSocketServer
 util.inherits(FakeSocket, EventEmitter);
-FakeSocket.prototype.send = function(data){ this.emit('send', data) };
+FakeSocket.prototype.send = function(data){ this.emit('send', data); };
 
 // ---------------------------------------------------------------------------------------------------------------------
 

@@ -21,7 +21,7 @@ function FakeSocketServer()
     EventEmitter.call(this);
 } // end FakeSocketServer
 util.inherits(FakeSocketServer, EventEmitter);
-FakeSocketServer.prototype.send = function(data){ this.emit('send', data) };
+FakeSocketServer.prototype.send = function(data){ this.emit('send', data); };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -201,7 +201,7 @@ describe('UniSocketServer', function()
             var cb = function(client){};
             server.channel('foobar', cb);
 
-            assert.equal(server.channels['foobar'][0], cb);
+            assert.equal(server.channels.foobar[0], cb);
         });
 
         it('calls the registered channel callbacks on a `channel` message', function(done)
