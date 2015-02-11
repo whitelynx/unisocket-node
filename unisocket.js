@@ -102,10 +102,10 @@ UniSocketServer.prototype._handleControlMessages = function(socket)
                     var channel = message.data[0];
                     if(channel in self.channels)
                     {
+                        var channelClient = new UniSocketClient(socket, channel, self.options);
                         self.channels[channel].forEach(function(callback)
                         {
-                            var client = new UniSocketClient(socket, channel, self.options);
-                            callback(client);
+                            callback(channelClient);
                         });
                     } // end if
                     break;
